@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAINEL GHOST AURA 1.0 — GIMMICK</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
+body{background:#000;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.layar{display:none;width:100%;max-width:450px}
+.layar.aktif{display:block}
+/* Panel Utama */
+.panel-bungkus{background:#111;border:3px solid #ff2222;border-radius:12px;overflow:hidden;box-shadow:0 0 25px #ff222288}
+.panel-header{background:linear-gradient(90deg,#c00,#ff3333);padding:12px 15px;display:flex;justify-content:space-between;align-items:center;font-weight:bold}
+.tombol-tutup button{background:#00000044;border:none;color:#fff;width:28px;height:28px;border-radius:4px;margin-left:4px;cursor:pointer}
+.panel-badan{display:flex;min-height:320px}
+.menu-samping{width:110px;background:#1a1a1a;padding:10px 0}
+.menu-item{display:block;width:100%;background:transparent;border:none;color:#bbb;padding:10px 8px;text-align:left;cursor:pointer;border-left:3px solid transparent}
+.menu-item.aktif{background:#2a2a2a;color:#fff;border-left-color:red}
+.konten{flex:1;padding:15px;background:#222}
+.tab-konten{display:none}
+.tab-konten.aktif{display:block}
+.judul-tab{margin-bottom:12px;color:#ff5555;font-weight:bold}
+.baris-cek{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #333}
+.status-label{padding:3px 8px;border-radius:4px;font-size:12px;font-weight:bold}
+.hijau{background:#00aa44;color:#fff}
+.merah{background:#cc2222;color:#fff}
+.saklar{position:relative;display:inline-block;width:44px;height:24px;margin:0 8px}
+.saklar input{opacity:0;width:0;height:0}
+.tombol-saklar{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#555;border-radius:24px;transition:.3s}
+.tombol-saklar:before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.3s}
+.saklar input:checked + .tombol-saklar{background:#ff2222}
+.saklar input:checked + .tombol-saklar:before{transform:translateX(20px)}
+.slider-baris{margin:14px 0}
+.slider-baris label{display:block;margin-bottom:5px;color:#ddd}
+.slider-baris input[type="range"]{width:100%;accent-color:red}
+.bawah{padding:15px;background:#181818;text-align:center}
+.btn-start{background:linear-gradient(90deg,#c00,#ff3333);border:none;color:#fff;padding:12px 35px;font-size:17px;font-weight:bold;border-radius:8px;cursor:pointer;width:100%;margin-bottom:8px}
+.catatan{font-size:12px;color:#888}
+/* Layar Izin */
+.kotak-izin{background:#111;border:2px solid #ff2222;border-radius:12px;padding:25px;box-shadow:0 0 20px #ff222266}
+.kotak-izin h2{text-align:center;margin-bottom:15px;color:#ff4444}
+.kotak-izin p{margin-bottom:10px;line-height:1.6}
+.langkah{background:#222;padding:12px;border-radius:8px;margin:15px 0}
+.langkah p{margin:6px 0}
+.btn-pengaturan{background:#dd2222;border:none;color:#fff;padding:12px;width:100%;border-radius:8px;font-size:16px;cursor:pointer;margin:8px 0;font-weight:bold}
+.btn-kembali{background:#222;border:2px solid #22aa44;color:#22dd55;padding:12px;width:100%;border-radius:8px;font-size:16px;cursor:pointer;margin:4px 0}
+/* Panel Mengambang */
+.panel-mengambang{position:fixed;top:20px;right:15px;width:260px;z-index:9999;display:none}
+.panel-mengambang.tersembunyi{display:none}
+.panel-mengambang.tampil{display:block}
+.panel-kecil{background:#111;border:2px solid #ff2222;border-radius:10px;box-shadow:0 0 15px #ff222277}
+.kepala-kecil{background:linear-gradient(90deg,#c00,#ff3333);padding:8px 12px;display:flex;justify-content:space-between;align-items:center;font-weight:bold;cursor:move}
+#tutupMengambang{background:transparent;border:none;color:#fff;font-size:18px;cursor:pointer}
+.isi-kecil{padding:12px}
+.baris-kecil{display:flex;align-items:center;gap:8px;margin:8px 0}
+.warna-pilih{display:flex;gap:8px;margin-top:10px;align-items:center}
+.warna-merah{background:red;border:none;width:24px;height:24px;border-radius:50%;cursor:pointer}
+.warna-hijau{background:lime;border:none;width:24px;height:24px;border-radius:50%;cursor:pointer}
+.warna-biru{background:blue;border:none;width:24px;height:24px;border-radius:50%;cursor:pointer}
+.warna-kuning{background:yellow;border:none;width:24px;height:24px;border-radius:50%;cursor:pointer;color:#000}
+</style>
+</head>
+<body>
+
+<!-- Layar Utama -->
+<div id="layarUtama" class="layar aktif">
+  <div class="panel-bungkus">
+    <div class="panel-header">
+      <span>👻 PAINEL GHOST AURA 1.0</span>
+      <div class="tombol-tutup">
+        <button id="minimBtn">─</button>
+        <button id="tutupUtama">×</button>
+      </div>
+    </div>
+    <div class="panel-badan">
+      <div class="menu-samping">
+        <button class="menu-item aktif" data-menu="principal">💀 Principal</button>
+        <button class="menu-item" data-menu="configs">⚙️ Configs</button>
+        <button class="menu-item" data-menu="gelo">🧊 Gelo</button>
+        <button class="menu-item" data-menu="ia">🎯 IA</button>
+        <button class="menu-item" data-menu="otimizar">⚡ Otimizar</button>
+        <button class="menu-item" data-menu="mais">☰ Mais</button>
+      </div>
+      <div class="konten">
+        <div class="tab-konten aktif" id="principal">
+          <label class="baris-cek">
+            <input type="checkbox" checked>
+            <span>Aimbot Rage</span>
+            <span class="status-label hijau">ATIVO</span>
+          </label>
+          <label class="baris-cek">
+            <input type="checkbox">
+            <span>Aimlock</span>
+            <span class="status-label hijau">ATIVO</span>
+          </label>
+          <label class="baris-cek">
+            <input type="checkbox">
+            <span>No Recoil</span>
+            <span class="status-label merah">DESATIVADO</span>
+          </label>
+          <label class="baris-cek">
+            <span>Botão Trick</span>
+            <label class="saklar">
+              <input type="checkbox" id="botaoTrick">
+              <span class="tombol-saklar"></span>
+            </label>
+            <span class="status-label merah">DESATIVADO</span>
+          </label>
+          <label class="baris-cek">
+            <span>Mira Pro</span>
+            <label class="saklar">
+              <input type="checkbox" id="miraPro">
+              <span class="tombol-saklar"></span>
+            </label>
+            <span class="status-label merah">DESATIVADO</span>
+          </label>
+        </div>
+        <div class="tab-konten" id="configs">
+          <p class="judul-tab">Sensitivitas</p>
+          <div class="slider-baris"><label>Redot</label><input type="range" min="0" max="100" value="85"></div>
+          <div class="slider-baris"><label>2X</label><input type="range" min="0" max="100" value="80"></div>
+          <div class="slider-baris"><label>4X</label><input type="range" min="0" max="100" value="75"></div>
+          <div class="slider-baris"><label>AWM</label><input type="range" min="0" max="100" value="90"></div>
+        </div>
+        <div class="tab-konten" id="gelo">
+          <p class="judul-tab">🧊 Pengaturan Gelo</p>
+          <div class="slider-baris"><label>Kekuatan</label><input type="range" min="0" max="100" value="60"></div>
+        </div>
+        <div class="tab-konten" id="ia">
+          <p class="judul-tab">🎯 Pengaturan IA</p>
+          <div class="slider-baris"><label>Presisi</label><input type="range" min="0" max="100" value="95"></div>
+        </div>
+        <div class="tab-konten" id="otimizar">
+          <p class="judul-tab">⚡ Optimisasi</p>
+          <div class="slider-baris"><label>FPS Maks</label><input type="range" min="30" max="120" value="90"></div>
+        </div>
+        <div class="tab-konten" id="mais">
+          <p class="judul-tab">☰ Lainnya</p>
+          <label class="baris-cek">
+            <input type="checkbox" checked>
+            <span>Anti-Ban</span>
+            <span class="status-label hijau">AKTIF</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="bawah">
+      <button id="startBtn" class="btn-start">▶ START PANEL</button>
+      <p class="catatan">⚠️ DEMO SAJA — tidak mengubah game asli</p>
+    </div>
+  </div>
+</div>
+
+<!-- Layar Izin -->
+<div id="layarIzin" class="layar">
+  <div class="kotak-izin">
+    <h2>🔒 Izin Diperlukan</h2>
+    <p>Untuk menampilkan panel di atas Free Fire, harus izin <strong>"Tampilkan di atas aplikasi lain"</strong> di Pengaturan.</p>
+    <div class="langkah">
+      <p>1. Klik tombol di bawah</p>
+      <p>2. Cari "Panel Ghost Aura"</p>
+      <p>3. Aktifkan izin tampil di atas aplikasi lain</p>
+      <p>4. Kembali ke sini</p>
+    </div>
+    <button id="kePengaturanBtn" class="btn-pengaturan">⚙️ BUKA PENGATURAN</button>
+    <button id="sudahIzinBtn" class="btn-kembali">✅ SUDAH MENGIZINKAN</button>
+  </div>
+</div>
+
+<!-- Panel Mengambang -->
+<div id="panelMengambang" class="panel-mengambang tersembunyi">
+  <div class="panel-kecil">
+    <div class="kepala-kecil" id="seretKepala">
+      <span>👻 GHOST AURA</span>
+      <button id="tutupMengambang">×</button>
+    </div>
+    <div class="isi-kecil">
+      <label class="baris-kecil"><input type="checkbox" checked> Aimbot</label>
+      <label class="baris-kecil"><input type="checkbox"> No Recoil</label>
+      <label class="baris-kecil"><input type="checkbox" checked> Anti-Ban</label>
+      <div class="warna-pilih">
+        <span>Warna:</span>
+        <button class="warna-merah"></button>
+        <button class="warna-hijau"></button>
+        <button class="warna-biru"></button>
+        <button class="warna-kuning"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Ganti Tab Menu
+document.querySelectorAll('.menu-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.menu-item').forEach(b => b.classList.remove('aktif'));
+    document.querySelectorAll('.tab-konten').forEach(t => t.classList.remove('aktif'));
+    btn.classList.add('aktif');
+    document.getElementById(btn.dataset.menu).classList.add('aktif');
+  });
+});
+
+// Tombol Start → ke layar izin
+document.getElementById('startBtn').addEventListener('click', () => {
+  document.getElementById('layarUtama').classList.remove('aktif');
+  document.getElementById('layarIzin').classList.add('aktif');
+});
+
+// Buka Pengaturan (hanya simulasi)
+document.getElementById('kePengaturanBtn').addEventListener('click', () => {
+  alert('🔗 Membuka Pengaturan...\n\n(Ini cuma demo — tidak benar-benar buka pengaturan asli)');
+});
+
+// Sudah izin → muncul panel mengambang
+document.getElementById('sudahIzinBtn').addEventListener('click', () => {
+  document.getElementById('layarIzin').classList.remove('aktif');
+  document.getElementById('panelMengambang').classList.remove('tersembunyi');
+  document.getElementById('panelMengambang').classList.add('tampil');
+  alert('✅ Izin diterima!\nPanel sekarang melayang di layar seperti di atas Free Fire!');
+});
+
+// Tutup panel mengambang
+document.getElementById('tutupMengambang').addEventListener('click', () => {
+  document.getElementById('panelMengambang').classList.add('tersembunyi');
+  document.getElementById('panelMengambang').classList.remove('tampil');
+  document.getElementById('layarUtama').classList.add('aktif');
+});
+
+// Tutup & kembali
+document.getElementById('tutupUtama').addEventListener('click', () => {
+  if(confirm('Tutup panel?')) {
+    document.getElementById('layarUtama').classList.remove('aktif');
+    document.body.innerHTML = '<h2 style="text-align:center;padding-top:40px;">Panel Ditutup</h2><p style="text-align:center;color:#888;">Muat ulang halaman untuk buka lagi</p>';
+  }
+});
+
+// Seret panel mengambang
+const p = document.getElementById('panelMengambang');
+const h = document.getElementById('seretKepala');
+let aktif = false, ox, oy;
+h.addEventListener('mousedown', e => {
+  aktif = true;
+  ox = e.clientX - p.getBoundingClientRect().left;
+  oy = e.clientY - p.getBoundingClientRect().top;
+});
+document.addEventListener('mousemove', e => {
+  if(!aktif) return;
+  p.style.left = (e.clientX - ox) + 'px';
+  p.style.top = (e.clientY - oy) + 'px';
+  p.style.right = 'auto';
+});
+document.addEventListener('mouseup', () => aktif = false);
+</script>
+</body>
+</html>
